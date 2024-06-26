@@ -5,11 +5,13 @@ from uuid import uuid4
 client = TestClient(app)
 
 def test_read_root():
+        # Teste si la route racine "/" renvoie un message "Hello World"
     response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"message": "Hello World"}
 
 def test_create_student():
+     # Teste la création d'un nouvel étudiant et vérifie si un identifiant est renvoyé
     student_data = {
         "first_name": "John",
         "last_name": "Doe",
@@ -23,6 +25,7 @@ def test_create_student():
 
 
 def test_get_student_existing():
+    # Teste la récupération d'un étudiant existant par son identifiant
     student_data = {
         "first_name": "Jane",
         "last_name": "Doe",
@@ -40,11 +43,13 @@ def test_get_student_existing():
     assert retrieved_student["last_name"] == "Doe"
 
 def test_get_student_non_existing():
+    # Teste la récupération d'un étudiant non existant, attend une réponse 404
     non_existing_id = str(uuid4())
     response = client.get(f"/student/{non_existing_id}")
     assert response.status_code == 404
 
 def test_delete_student_existing():
+    # Teste la suppression d'un étudiant existant par son identifiant
     student_data = {
         "first_name": "John",
         "last_name": "Smith",
@@ -59,11 +64,13 @@ def test_delete_student_existing():
     assert response.json() == {"message": "Student deleted"}
 
 def test_delete_student_non_existing():
+    # Teste la suppression d'un étudiant non existant, attend une réponse 404
     non_existing_id = str(uuid4())
     response = client.delete(f"/student/{non_existing_id}")
     assert response.status_code == 404
 
 def test_export_data_csv():
+    # Teste l'exportation des données au format CSV et vérifie le contenu du fichier CSV
     response = client.get("/export?format=csv")
     assert response.status_code == 200
     content = response.content.decode("utf-8")
@@ -71,6 +78,7 @@ def test_export_data_csv():
     assert len(content.split("\n")) > 1
 
 def test_export_data_json():
+    # Teste l'exportation des données au format JSON et vérifie le contenu
     response = client.get("/export?format=json")
     assert response.status_code == 200
     data = response.json()
@@ -78,6 +86,7 @@ def test_export_data_json():
     assert len(data) > 0
 
 def test_export_data_invalid_format():
+    # Teste l'exportation des données avec un format invalide, attend une réponse 400
     response = client.get("/export?format=xml")
     assert response.status_code == 400
     assert response.json() == {"detail": "Invalid format"}
